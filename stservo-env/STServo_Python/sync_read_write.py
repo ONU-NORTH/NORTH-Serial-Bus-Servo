@@ -105,7 +105,7 @@ while 1:
         if sts_comm_result != COMM_SUCCESS:
             print("%s" % packetHandler.getTxRxResult(sts_comm_result))
 
-        sts_last_moving = 0;
+        sts_last_moving = 0
         for sts_id in range(1, 11):
             # Check if groupsyncread data of STServo#1~10 is available
             sts_data_result, sts_error = groupSyncRead.isAvailable(sts_id, STS_PRESENT_POSITION_L, 11)
@@ -117,7 +117,7 @@ while 1:
                 # print(scs_present_moving)
                 print("[ID:%03d] PresPos:%d PresSpd:%d" % (sts_id, sts_present_position, packetHandler.sts_tohost(sts_present_speed, 15)))
                 if sts_present_moving==1:
-                    sts_last_moving = 1;
+                    sts_last_moving = 1
             else:
                 print("[ID:%03d] groupSyncRead getdata failed" % sts_id)
                 continue

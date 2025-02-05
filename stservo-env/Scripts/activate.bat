@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\liuwei\Desktop\STServo_Python\stservo-env
+set VIRTUAL_ENV=C:\Users\rdav\Desktop\STServo_Python\stservo-env
 
 if not defined PROMPT set PROMPT=$P$G
 
