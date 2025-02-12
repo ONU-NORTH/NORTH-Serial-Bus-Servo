@@ -76,7 +76,14 @@ while 1:
         break
 
     # Write STServo goal position/moving speed/moving acc
-    sts_comm_result, sts_error = packetHandler.WritePosEx(STS_ID, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
+    sts_comm_result, sts_error = packetHandler.WritePosEx(1, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
+    if sts_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(sts_comm_result))
+    if sts_error != 0:
+        print("%s" % packetHandler.getRxPacketError(sts_error))
+
+    # Write STServo goal position/moving speed/moving acc
+    sts_comm_result, sts_error = packetHandler.WritePosEx(2, sts_goal_position[not(index)], STS_MOVING_SPEED, STS_MOVING_ACC)
     if sts_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(sts_comm_result))
     if sts_error != 0:

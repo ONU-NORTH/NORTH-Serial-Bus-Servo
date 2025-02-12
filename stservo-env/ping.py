@@ -26,11 +26,11 @@ else:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-sys.path.append("..")
+# sys.path.append("..")
 from STservo_sdk import *                   # Uses STServo SDK library
 
 # Default setting
-STS_ID                  = 1                 # STServo ID : 1
+STS_ID                  = [1, 2]                 # STServo ID : 1
 BAUDRATE                = 1000000           # STServo default baudrate : 1000000
 DEVICENAME              = 'COM4'    # Check which port is being used on your controller
                                             # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
@@ -62,15 +62,16 @@ else:
     getch()
     quit()
 
-# Try to ping the STServo
-# Get STServo model number
-sts_model_number, sts_comm_result, sts_error = packetHandler.ping(STS_ID)
-if sts_comm_result != COMM_SUCCESS:
-    print("%s" % packetHandler.getTxRxResult(sts_comm_result))
-else:
-    print("[ID:%03d] ping Succeeded. STServo model number : %d" % (STS_ID, sts_model_number))
-if sts_error != 0:
-    print("%s" % packetHandler.getRxPacketError(sts_error))
+for id in STS_ID:
+    # Try to ping the STServo
+    # Get STServo model number
+    sts_model_number, sts_comm_result, sts_error = packetHandler.ping(id)
+    if sts_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(sts_comm_result))
+    else:
+        print("[ID:%03d] ping Succeeded. STServo model number : %d" % (id, sts_model_number))
+    if sts_error != 0:
+        print("%s" % packetHandler.getRxPacketError(sts_error))
 
 # Close port
 portHandler.closePort()

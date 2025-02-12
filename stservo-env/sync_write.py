@@ -9,6 +9,7 @@
 
 import sys
 import os
+import time
 
 if os.name == 'nt':
     import msvcrt
@@ -26,12 +27,12 @@ else:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-sys.path.append("..")
+# sys.path.append("..")
 from STservo_sdk import *                      # Uses STServo SDK library
 
 # Default setting
 BAUDRATE                    = 1000000           # STServo default baudrate : 1000000
-DEVICENAME                  = 'COM11'    # Check which port is being used on your controller
+DEVICENAME                  = 'COM4'    # Check which port is being used on your controller
                                                 # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 STS_MINIMUM_POSITION_VALUE  = 0                 # STServo will rotate between this value
@@ -76,11 +77,21 @@ while 1:
     if getch() == chr(0x1b):
         break
 
-    for sts_id in range(1, 11):
-        # Add STServo#1~10 goal position\moving speed\moving accc value to the Syncwrite parameter storage
-        sts_addparam_result = packetHandler.SyncWritePosEx(sts_id, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
-        if sts_addparam_result != True:
-            print("[ID:%03d] groupSyncWrite addparam failed" % sts_id)
+    # for sts_id in range(1, 11):
+    #     # Add STServo#1~10 goal position\moving speed\moving accc value to the Syncwrite parameter storage
+    #     sts_addparam_result = packetHandler.SyncWritePosEx(sts_id, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
+    #     if sts_addparam_result != True:
+    #         print("[ID:%03d] groupSyncWrite addparam failed" % sts_id)
+
+    sts_addparam_result = packetHandler.SyncWritePosEx(1, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
+    if sts_addparam_result != True:
+        print("[ID:%03d] groupSyncWrite addparam failed" % 1)
+
+    # time.sleep(10)
+
+    sts_addparam_result = packetHandler.SyncWritePosEx(2, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
+    if sts_addparam_result != True:
+        print("[ID:%03d] groupSyncWrite addparam failed" % 2)
 
     # Syncwrite goal position
     sts_comm_result = packetHandler.groupSyncWrite.txPacket()

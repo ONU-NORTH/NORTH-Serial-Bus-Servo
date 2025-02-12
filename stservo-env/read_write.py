@@ -70,13 +70,16 @@ else:
     getch()
     quit()
 
+idx = 0
+
 while 1:
     print("Press any key to continue! (or press ESC to quit!)")
     if getch() == chr(0x1b):
         break
-
+    
+    idx = not(idx)
     # Write STServo goal position/moving speed/moving acc
-    sts_comm_result, sts_error = packetHandler.WritePosEx(STS_ID, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
+    sts_comm_result, sts_error = packetHandler.WritePosEx(idx, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
     if sts_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(sts_comm_result))
     elif sts_error != 0:
@@ -88,12 +91,12 @@ while 1:
         if sts_comm_result != COMM_SUCCESS:
             print(packetHandler.getTxRxResult(sts_comm_result))
         else:
-            print("[ID:%03d] GoalPos:%d PresPos:%d PresSpd:%d" % (STS_ID, sts_goal_position[index], sts_present_position, sts_present_speed))
+            print("[ID:%03d] GoalPos:%d PresPos:%d PresSpd:%d" % (idx, sts_goal_position[index], sts_present_position, sts_present_speed))
         if sts_error != 0:
             print(packetHandler.getRxPacketError(sts_error))
 
         # Read STServo moving status
-        moving, sts_comm_result, sts_error = packetHandler.ReadMoving(STS_ID)
+        moving, sts_comm_result, sts_error = packetHandler.ReadMoving(idx)
         if sts_comm_result != COMM_SUCCESS:
             print(packetHandler.getTxRxResult(sts_comm_result))
 
