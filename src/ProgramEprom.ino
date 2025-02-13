@@ -1,7 +1,7 @@
 /*
 example for changing ID.
 */
-#include <Arduino.h>
+// #include <Arduino.h>
 #include <SCServo.h>
 
 SMS_STS sms_sts;
