@@ -27,21 +27,36 @@ else:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-sys.path.append("..")
+# sys.path.append("..")
 from STservo_sdk import *                 # Uses STServo SDK library
 
 # Default setting
-STS_ID                      = 1                 # STServo ID : 1
 BAUDRATE                    = 1000000           # STServo default baudrate : 1000000
 DEVICENAME                  = 'COM4'    # Check which port is being used on your controller
                                                 # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
-STS_MINIMUM_POSITION_VALUE  = 0           # STServo will rotate between this value
-STS_MAXIMUM_POSITION_VALUE  = 4095
-STS_MOVING_SPEED            = 2400        # STServo moving speed
-STS_MOVING_ACC              = 50          # STServo moving acc
 
-index = 0
-sts_goal_position = [STS_MINIMUM_POSITION_VALUE, STS_MAXIMUM_POSITION_VALUE]         # Goal position
+joint_list = [1, 2]
+
+# Joint 1
+J1_STS_ID                      = 1                 # STServo ID : 1
+J1_STS_MINIMUM_POSITION_VALUE  = -10         # STServo will rotate between this value
+J1_STS_MAXIMUM_POSITION_VALUE  = 300         # Max: 4095
+J1_STS_MOVING_SPEED            = 1000        # STServo moving speed
+J1_STS_MOVING_ACC              = 10          # STServo moving acc
+
+J1_index = 0
+J1_sts_goal_position = [J1_STS_MINIMUM_POSITION_VALUE, J1_STS_MAXIMUM_POSITION_VALUE]         # Goal position
+
+# Joint 1
+J2_STS_ID                      = 1                 # STServo ID : 1
+J2_STS_MINIMUM_POSITION_VALUE  = -10         # STServo will rotate between this value
+J2_STS_MAXIMUM_POSITION_VALUE  = 300         # Max: 4095
+J2_STS_MOVING_SPEED            = 1000        # STServo moving speed
+J2_STS_MOVING_ACC              = 10          # STServo moving acc
+
+J2_index = 0
+J2_sts_goal_position = [J2_STS_MINIMUM_POSITION_VALUE, J2_STS_MAXIMUM_POSITION_VALUE]         # Goal position
+
 
 # Initialize PortHandler instance
 # Set the port path
@@ -71,29 +86,42 @@ else:
     quit()
 
 while 1:
+    # for joint in joint_list:
+    print("Joint 1:")
     print("Press any key to continue! (or press ESC to quit!)")
     if getch() == chr(0x1b):
         break
 
     # Write STServo goal position/moving speed/moving acc
-    sts_comm_result, sts_error = packetHandler.WritePosEx(STS_ID, sts_goal_position[index], STS_MOVING_SPEED, STS_MOVING_ACC)
+    sts_comm_result, sts_error = packetHandler.WritePosEx(J1_STS_ID, J1_sts_goal_position[J1_index], J1_STS_MOVING_SPEED, J1_STS_MOVING_ACC)
     if sts_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(sts_comm_result))
     if sts_error != 0:
         print("%s" % packetHandler.getRxPacketError(sts_error))
 
-    # # Write STServo goal position/moving speed/moving acc
-    # sts_comm_result, sts_error = packetHandler.WritePosEx(2, sts_goal_position[not(index)], STS_MOVING_SPEED, STS_MOVING_ACC)
-    # if sts_comm_result != COMM_SUCCESS:
-    #     print("%s" % packetHandler.getTxRxResult(sts_comm_result))
-    # if sts_error != 0:
-    #     print("%s" % packetHandler.getRxPacketError(sts_error))
+    # Change goal position
+    if J1_index == 0:
+        J1_index = 1
+    else:
+        J1_index = 0
+
+    print("Joint 2:")
+    print("Press any key to continue! (or press ESC to quit!)")
+    if getch() == chr(0x1b):
+        break
+
+    # Write STServo goal position/moving speed/moving acc
+    sts_comm_result, sts_error = packetHandler.WritePosEx(J2_STS_ID, J2_sts_goal_position[J2_index], J2_STS_MOVING_SPEED, J2_STS_MOVING_ACC)
+    if sts_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(sts_comm_result))
+    if sts_error != 0:
+        print("%s" % packetHandler.getRxPacketError(sts_error))
 
     # Change goal position
-    if index == 0:
-        index = 1
+    if J2_index == 0:
+        J2_index = 1
     else:
-        index = 0
+        J2_index = 0
 
 # Close port
 portHandler.closePort()
