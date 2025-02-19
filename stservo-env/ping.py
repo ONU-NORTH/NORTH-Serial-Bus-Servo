@@ -9,15 +9,24 @@
 
 import sys
 import os
+import re
 
 from usbmonitor import USBMonitor # https://pypi.org/project/usb-monitor/
-from usbmonitor.attributes import ID_MODEL, ID_MODEL_ID, ID_VENDOR_ID
+from usbmonitor.attributes import *
 
 # Create the USBMonitor instance
 monitor = USBMonitor(filter_devices=({'ID_MODEL':'USB-Enhanced-SERIAL CH343'},{'ID_MODEL_ID':'55D3'}))
 
 # Get the current devices
 devices = monitor.get_available_devices()
+
+# Print them
+for device_id, device_info in devices.items():
+    print(f"{device_id} -- {device_info[ID_MODEL]} ({device_info[ID_MODEL_ID]} - {device_info[ID_VENDOR_ID]})")
+    match = re.search(r'\((.*?)\)', device_info[ID_MODEL])
+    if match:
+      portname = match.group(1)
+      print(f"Port: {portname}")
 
 if os.name == 'nt':
     import msvcrt
@@ -38,13 +47,10 @@ else:
 # sys.path.append("..")
 from STservo_sdk import *                   # Uses STServo SDK library
 
-# Default setting
-# STS_ID                  = [1, 2]                 # STServo ID : 1
-# STS_ID                  = 4                 # STServo ID : 1
-
+# Servo settings
 SERVOLIST               = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 BAUDRATE                = 1000000           # STServo default baudrate : 1000000
-DEVICENAME              = devices[PORT]
+DEVICENAME              = portname
 
 # Initialize PortHandler instance
 # Set the port path
