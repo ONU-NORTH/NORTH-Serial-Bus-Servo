@@ -10,6 +10,15 @@
 import sys
 import os
 
+from usbmonitor import USBMonitor
+from usbmonitor.attributes import ID_MODEL, ID_MODEL_ID, ID_VENDOR_ID
+
+# Create the USBMonitor instance
+monitor = USBMonitor(filter_devices=({'ID_MODEL':'USB-Enhanced-SERIAL CH343'},{'ID_MODEL_ID':'55D3'}))
+
+# Get the current devices
+devices = monitor.get_available_devices()
+
 if os.name == 'nt':
     import msvcrt
     def getch():
@@ -31,11 +40,11 @@ from STservo_sdk import *                   # Uses STServo SDK library
 
 # Default setting
 # STS_ID                  = [1, 2]                 # STServo ID : 1
-STS_ID                  = 4                 # STServo ID : 1
+# STS_ID                  = 4                 # STServo ID : 1
 
+SERVOLIST               = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 BAUDRATE                = 1000000           # STServo default baudrate : 1000000
-DEVICENAME              = 'COM5'    # Check which port is being used on your controller
-                                            # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+DEVICENAME              = devices[PORT]
 
 # Initialize PortHandler instance
 # Set the port path
@@ -68,16 +77,19 @@ else:
     # Try to ping the STServo
     # Get STServo model number
     # sts_model_number, sts_comm_result, sts_error = packetHandler.ping(id)
-sts_model_number, sts_comm_result, sts_error = packetHandler.ping(STS_ID)
 
-if sts_comm_result != COMM_SUCCESS:
-    print("%s" % packetHandler.getTxRxResult(sts_comm_result))
-else:
-    # print("[ID:%03d] ping Succeeded. STServo model number : %d" % (id, sts_model_number))
-    print("[ID:%03d] ping Succeeded. STServo model number : %d" % (STS_ID, sts_model_number))
+for id in SERVOLIST:
+    print("Pinging servo: [ID:%03d]" % (id))
+    sts_model_number, sts_comm_result, sts_error = packetHandler.ping(id)
 
-if sts_error != 0:
-    print("%s" % packetHandler.getRxPacketError(sts_error))
+    if sts_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(sts_comm_result))
+    else:
+        # print("[ID:%03d] ping Succeeded. STServo model number : %d" % (id, sts_model_number))
+        print("[ID:%03d] ping Succeeded. STServo model number : %d" % (id, sts_model_number))
+
+    if sts_error != 0:
+        print("%s" % packetHandler.getRxPacketError(sts_error))
 
 # Close port
 portHandler.closePort()
