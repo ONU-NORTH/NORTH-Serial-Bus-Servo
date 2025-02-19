@@ -10,7 +10,7 @@
 import sys
 import os
 
-from usbmonitor import USBMonitor
+from usbmonitor import USBMonitor # https://pypi.org/project/usb-monitor/
 from usbmonitor.attributes import ID_MODEL, ID_MODEL_ID, ID_VENDOR_ID
 
 # Create the USBMonitor instance
