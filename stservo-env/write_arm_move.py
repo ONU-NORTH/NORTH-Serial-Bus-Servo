@@ -35,38 +35,29 @@ BAUDRATE                    = 1000000           # STServo default baudrate : 100
 DEVICENAME                  = 'COM5'    # Check which port is being used on your controller
                                                 # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
-joint_list = [1, 2]
+def write_position(motor_id, goal_pos, speed, accel):
+    sts_comm_result, sts_error = packetHandler.WritePosEx(motor_id, motor_id, speed, accel)
+    if sts_comm_result != COMM_SUCCESS:
+        print("[ID:%03d]: %s" % (motor_id, packetHandler.getTxRxResult(sts_comm_result)))
+    if sts_error != 0:
+        print("[ID:%03d]: %s" % (motor_id, packetHandler.getRxPacketError(sts_error)))
 
-# Joint 1
-J1_STS_ID                      = 1                 # STServo ID : 1
-J1_STS_MINIMUM_POSITION_VALUE  = 0         # STServo will rotate between this value
-J1_STS_MAXIMUM_POSITION_VALUE  = 4095         # Max: 4095
-J1_STS_MOVING_SPEED            = 1000        # STServo moving speed
-J1_STS_MOVING_ACC              = 10          # STServo moving acc
 
-J1_index = 0
-J1_sts_goal_position = [J1_STS_MINIMUM_POSITION_VALUE, J1_STS_MAXIMUM_POSITION_VALUE]         # Goal position
+# joint_list = [1, 2]
 
-# Joint 2
-J2_STS_ID                      = 2                 # STServo ID : 1
-J2_STS_MINIMUM_POSITION_VALUE  = 0        # STServo will rotate between this value
-J2_STS_MAXIMUM_POSITION_VALUE  = 4095         # Max: 4095
-J2_STS_MOVING_SPEED            = 1000        # STServo moving speed
-J2_STS_MOVING_ACC              = 10          # STServo moving acc
+# Joints
+Joint_STS_ID_list         = [1, 2, 3, 4, 5]
+Joint_MIN_POSITION_VALUE  = 0         # STServo will rotate between this value
+Joint_MAX_POSITION_VALUE  = 4095         # Max: 4095
+STS_MOVING_SPEED        = 2000        # STServo moving speed
+STS_MOVING_ACC          = 100          # STServo moving acc
 
-J2_index = 0
-J2_sts_goal_position = [J2_STS_MINIMUM_POSITION_VALUE, J2_STS_MAXIMUM_POSITION_VALUE]         # Goal position
-
-# Joint 3
-J3_STS_ID                      = 3                 # STServo ID : 1
-J3_STS_MINIMUM_POSITION_VALUE  = 0         # STServo will rotate between this value
-J3_STS_MAXIMUM_POSITION_VALUE  = 4095         # Max: 4095
-J3_STS_MOVING_SPEED            = 1000        # STServo moving speed
-J3_STS_MOVING_ACC              = 10          # STServo moving acc
-
-J3_index = 0
-J3_sts_goal_position = [J3_STS_MINIMUM_POSITION_VALUE, J3_STS_MAXIMUM_POSITION_VALUE]         # Goal position
-
+index = 0
+sts_goal_position = [[Joint_MIN_POSITION_VALUE, Joint_MAX_POSITION_VALUE],
+                     [Joint_MAX_POSITION_VALUE, Joint_MIN_POSITION_VALUE],
+                     [Joint_MIN_POSITION_VALUE, Joint_MAX_POSITION_VALUE],
+                     [Joint_MAX_POSITION_VALUE, Joint_MIN_POSITION_VALUE],
+                     [Joint_MIN_POSITION_VALUE, Joint_MAX_POSITION_VALUE]]         # Goal position
 
 # Initialize PortHandler instance
 # Set the port path
@@ -97,59 +88,48 @@ else:
 
 while 1:
     # for joint in joint_list:
-    print("Joint 1:")
-    print("Press any key to continue! (or press ESC to quit!)")
-    if getch() == chr(0x1b):
-        break
+    # print("Joint 1:")
+    # print("Press any key to continue! (or press ESC to quit!)")
+    # if getch() == chr(0x1b):
+    #     break
+    
 
     # Write STServo goal position/moving speed/moving acc
-    sts_comm_result, sts_error = packetHandler.WritePosEx(J1_STS_ID, J1_sts_goal_position[J1_index], J1_STS_MOVING_SPEED, J1_STS_MOVING_ACC)
+    # sts_comm_result, sts_error = packetHandler.WritePosEx(J1_STS_ID, J1_sts_goal_position[J1_index], J1_STS_MOVING_SPEED, J1_STS_MOVING_ACC)
+    # if sts_comm_result != COMM_SUCCESS:
+    #     print("%s" % packetHandler.getTxRxResult(sts_comm_result))
+    # if sts_error != 0:
+    #     print("%s" % packetHandler.getRxPacketError(sts_error))
+
+    for mot_id in Joint_STS_ID_list:
+        sts_addparam_result = packetHandler.SyncWritePosEx(mot_id, sts_goal_position[mot_id - 1][index], STS_MOVING_SPEED, STS_MOVING_ACC)
+        if sts_addparam_result != True:
+            print("[ID:%03d] groupSyncWrite addparam failed" % mot_id)
+
+    # sts_comm_result = packetHandler.SyncWritePosEx(1, 2075, 1000, 50);    
+    # if sts_comm_result != COMM_SUCCESS:
+    #     print("%s" % packetHandler.getTxRxResult(sts_comm_result))
+    # time.sleep(10)
+
+    # Syncwrite goal position
+    sts_comm_result = packetHandler.groupSyncWrite.txPacket()
     if sts_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(sts_comm_result))
-    if sts_error != 0:
-        print("%s" % packetHandler.getRxPacketError(sts_error))
+    
+    # Clear syncwrite parameter storage
+    packetHandler.groupSyncWrite.clearParam()
+
+    # print("Position: %03d" % packetHandler.ReadPos(1))
+
+    # while packetHandler.ReadPos(1) != sts_goal_position[1][index]:
+    #     time.sleep(1)
 
     # Change goal position
-    if J1_index == 0:
-        J1_index = 1
+    if index == 0:
+        index = 1
     else:
-        J1_index = 0
-
-    print("Joint 2:")
-    print("Press any key to continue! (or press ESC to quit!)")
-    if getch() == chr(0x1b):
-        break
-
-    # Write STServo goal position/moving speed/moving acc
-    sts_comm_result, sts_error = packetHandler.WritePosEx(J2_STS_ID, J2_sts_goal_position[J2_index], J2_STS_MOVING_SPEED, J2_STS_MOVING_ACC)
-    if sts_comm_result != COMM_SUCCESS:
-        print("%s" % packetHandler.getTxRxResult(sts_comm_result))
-    if sts_error != 0:
-        print("%s" % packetHandler.getRxPacketError(sts_error))
-
-    # Change goal position
-    if J2_index == 0:
-        J2_index = 1
-    else:
-        J2_index = 0
-
-    print("Joint 3:")
-    print("Press any key to continue! (or press ESC to quit!)")
-    if getch() == chr(0x1b):
-        break
-
-    # Write STServo goal position/moving speed/moving acc
-    sts_comm_result, sts_error = packetHandler.WritePosEx(J3_STS_ID, J3_sts_goal_position[J3_index], J3_STS_MOVING_SPEED, J3_STS_MOVING_ACC)
-    if sts_comm_result != COMM_SUCCESS:
-        print("%s" % packetHandler.getTxRxResult(sts_comm_result))
-    if sts_error != 0:
-        print("%s" % packetHandler.getRxPacketError(sts_error))
-
-    # Change goal position
-    if J3_index == 0:
-        J3_index = 1
-    else:
-        J3_index = 0
-
+        index = 0
+        
+    time.sleep(5)
 # Close port
 portHandler.closePort()
