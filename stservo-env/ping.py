@@ -48,7 +48,7 @@ else:
 from STservo_sdk import *                   # Uses STServo SDK library
 
 # Servo settings
-SERVOLIST               = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+SERVOLIST               = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 BAUDRATE                = 1000000           # STServo default baudrate : 1000000
 DEVICENAME              = portname
 
