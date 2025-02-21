@@ -9,6 +9,24 @@
 
 import sys
 import os
+import re
+
+from usbmonitor import USBMonitor # https://pypi.org/project/usb-monitor/
+from usbmonitor.attributes import *
+
+# Create the USBMonitor instance
+monitor = USBMonitor(filter_devices=({'ID_MODEL':'USB-Enhanced-SERIAL CH343'},{'ID_MODEL_ID':'55D3'}))
+
+# Get the current devices
+devices = monitor.get_available_devices()
+
+# Print them
+for device_id, device_info in devices.items():
+    print(f"{device_id} -- {device_info[ID_MODEL]} ({device_info[ID_MODEL_ID]} - {device_info[ID_VENDOR_ID]})")
+    match = re.search(r'\((.*?)\)', device_info[ID_MODEL])
+    if match:
+      portname = match.group(1)
+      print(f"Port: {portname}")
 
 if os.name == 'nt':
     import msvcrt
@@ -32,11 +50,9 @@ from STservo_sdk import *                 # Uses STServo SDK library
 
 # Default setting
 BAUDRATE                    = 1000000           # STServo default baudrate : 1000000
-DEVICENAME                  = 'COM5'    # Check which port is being used on your controller
-                                                # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 def write_position(motor_id, goal_pos, speed, accel):
-    sts_comm_result, sts_error = packetHandler.WritePosEx(motor_id, motor_id, speed, accel)
+    sts_comm_result, sts_error = packetHandler.WritePosEx(motor_id, goal_pos, speed, accel)
     if sts_comm_result != COMM_SUCCESS:
         print("[ID:%03d]: %s" % (motor_id, packetHandler.getTxRxResult(sts_comm_result)))
     if sts_error != 0:
@@ -62,7 +78,7 @@ sts_goal_position = [[Joint_MIN_POSITION_VALUE, Joint_MAX_POSITION_VALUE],
 # Initialize PortHandler instance
 # Set the port path
 # Get methods and members of PortHandlerLinux or PortHandlerWindows
-portHandler = PortHandler(DEVICENAME)
+portHandler = PortHandler(portname)
 
 # Initialize PacketHandler instance
 # Get methods and members of Protocol
