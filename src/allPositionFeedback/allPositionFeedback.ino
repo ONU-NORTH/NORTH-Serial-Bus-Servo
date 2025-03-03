@@ -31,36 +31,36 @@ void loop()
   int Move;
   int Current;
 
-  Pos = sms_sts.ReadPos(1);
+  Pos = sms_sts.ReadPos(5);
   if(Pos!=-1){
-    Serial.print("Servo 1 position:");
+    Serial.print("Servo 5 position:");
     Serial.println(Pos, DEC);
     delay(10);
   }else{
     Serial.println("read position err");
     delay(500);
   }
-  Pos = sms_sts.ReadPos(2);
+  Pos = sms_sts.ReadPos(6);
   if(Pos!=-1){
-    Serial.print("Servo 2 position:");
+    Serial.print("Servo 6 position:");
     Serial.println(Pos, DEC);
     delay(10);
   }else{
     Serial.println("read position err");
     delay(500);
   }
-  Pos = sms_sts.ReadPos(3);
+  Pos = sms_sts.ReadPos(7);
   if(Pos!=-1){
-    Serial.print("Servo 3 position:");
+    Serial.print("Servo 7 position:");
     Serial.println(Pos, DEC);
     delay(10);
   }else{
     Serial.println("read position err");
     delay(500);
   }
-  Pos = sms_sts.ReadPos(4);
+  Pos = sms_sts.ReadPos(8);
   if(Pos!=-1){
-    Serial.print("Servo 4 position:");
+    Serial.print("Servo 8 position:");
     Serial.println(Pos, DEC);
     delay(10);
   }else{
