@@ -11,27 +11,28 @@ import sys
 import os
 import re
 
-from usbmonitor import USBMonitor # https://pypi.org/project/usb-monitor/
-from usbmonitor.attributes import *
-
-# Create the USBMonitor instance
-monitor = USBMonitor(filter_devices=({'ID_MODEL':'USB-Enhanced-SERIAL CH343'},{'ID_MODEL_ID':'55D3'}))
-
-# Get the current devices
-devices = monitor.get_available_devices()
-
-# Print them
-for device_id, device_info in devices.items():
-    print(f"{device_id} -- {device_info[ID_MODEL]} ({device_info[ID_MODEL_ID]} - {device_info[ID_VENDOR_ID]})")
-    match = re.search(r'\((.*?)\)', device_info[ID_MODEL])
-    if match:
-      portname = match.group(1)
-      print(f"Port: {portname}")
+portname = ""
 
 if os.name == 'nt':
     import msvcrt
     def getch():
         return msvcrt.getch().decode()
+    from usbmonitor import USBMonitor # https://pypi.org/project/usb-monitor/
+    from usbmonitor.attributes import *
+
+    # Create the USBMonitor instance
+    monitor = USBMonitor(filter_devices=({'ID_MODEL':'USB-Enhanced-SERIAL CH343'},{'ID_MODEL_ID':'55D3'}))
+
+    # Get the current devices
+    devices = monitor.get_available_devices()
+
+    # Print them
+    for device_id, device_info in devices.items():
+        print(f"{device_id} -- {device_info[ID_MODEL]} ({device_info[ID_MODEL_ID]} - {device_info[ID_VENDOR_ID]})")
+        match = re.search(r'\((.*?)\)', device_info[ID_MODEL])
+        if match:
+            portname = match.group(1)
+            print(f"Port: {portname}")
 else:
     import sys, tty, termios
     fd = sys.stdin.fileno()
@@ -43,6 +44,7 @@ else:
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
+    portname = "/dev/tty.usbserial-*"
 
 # sys.path.append("..")
 from STservo_sdk import *                   # Uses STServo SDK library
