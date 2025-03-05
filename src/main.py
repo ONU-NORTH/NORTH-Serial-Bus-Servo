@@ -1,7 +1,7 @@
 import sys
 import os
 from STservo_sdk import * # import the STServo SDK library
-import Joint
+from motors import Joint
 
 # windows
 import re
@@ -54,8 +54,11 @@ def main():
   # Get methods and members of Protocol
   packetHandler = sts(portHandler)
 
-  serv_motors = [Joint(1, True, packetHandler, 'joint1'),
-                 Joint(2, True, packetHandler, 'joint2')]
+  serv_motors = []
+  # serv_motors = [Joint(1, True, packetHandler, 'joint1'),
+  #                Joint(2, True, packetHandler, 'joint2')]
+  serv_motors.append(Joint(1, True, packetHandler, 'joint1'))
+  serv_motors.append(Joint(2, True, packetHandler, 'joint2'))
 
   for pos in positions:
     for i in range(len(serv_motors)):

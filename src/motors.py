@@ -1,5 +1,5 @@
 import math as math
-from STservo_sdk import * # import the STServo SDK library
+from STservo_sdk import *  # import the STServo SDK library
 
 """ motor variables:
     int baudrate_ = 1000000;
@@ -33,8 +33,8 @@ class Joint:
 
     # sts_comm_result, sts_error = self.packetHandler.WritePosEx(self.motid, servo_angle, 
     #                                                            velocity, accel)
-    sts_comm_result, sts_error = self.packetHandler.SyncWritePosEx(
-       self.motid, servo_angle, velocity, accel)
+    sts_comm_result, sts_error = self.packetHandler.SyncWritePosEx(self.motid, 
+                                                                   servo_angle, velocity, accel)
     
     if sts_comm_result != COMM_SUCCESS:
         print("[ID:%03d]: %s" % (self.motid, 
