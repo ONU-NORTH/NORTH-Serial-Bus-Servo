@@ -1,7 +1,7 @@
 import sys
 import os
+from Joint import *
 from STservo_sdk import * # import the STServo SDK library
-from motors import Joint
 
 # windows
 import re
@@ -24,7 +24,7 @@ def getPort():
 
     # Print them
     for device_id, device_info in devices.items():
-      print(f"{device_id} -- {device_info[ID_MODEL]} ({device_info[ID_MODEL_ID]} - {device_info[ID_VENDOR_ID]})")
+      # print(f"{device_id} -- {device_info[ID_MODEL]} ({device_info[ID_MODEL_ID]} - {device_info[ID_VENDOR_ID]})")
       match = re.search(r'\((.*?)\)', device_info[ID_MODEL])
       if match:
         portname = match.group(1)
@@ -32,10 +32,12 @@ def getPort():
   else:
     # import sys, tty, termios
     portname = "/dev/tty.usbserial-*"
+    # portname = "/dev/ttyACM0" # allocated port for st servos on jetson 
   return portname
 
 
-positions = [0, 45, 90, 180, 225, 270, 315, 360]
+# positions = [0, 45, 90, 180, 225, 270, 315, 360]
+positions = [0, 180, 360]
 
 def main():
   portname = getPort()
@@ -54,16 +56,15 @@ def main():
   # Get methods and members of Protocol
   packetHandler = sts(portHandler)
 
-  serv_motors = []
+  serv_motors = [Joint for c in range(2)]
   # serv_motors = [Joint(1, True, packetHandler, 'joint1'),
   #                Joint(2, True, packetHandler, 'joint2')]
-  serv_motors.append(Joint(1, True, packetHandler, 'joint1'))
-  serv_motors.append(Joint(2, True, packetHandler, 'joint2'))
+  serv_motors[0] = Joint(packetHandler, 1, 'joint1', True)
+  serv_motors[1] = Joint(packetHandler, 2, 'joint2', True)
 
   for pos in positions:
     for i in range(len(serv_motors)):
       serv_motors[i].writeAngle(pos, 2000, 90)
-
 
     # Syncwrite goal position
     sts_comm_result = packetHandler.groupSyncWrite.txPacket()
@@ -72,7 +73,8 @@ def main():
     
     # Clear syncwrite parameter storage
     packetHandler.groupSyncWrite.clearParam()
-    getch()
+    # getch()
+    time.sleep(10)
 
   portHandler.closePort()
 
