@@ -9,14 +9,4 @@ based on code located here: https://files.waveshare.com/wiki/Bus-Servo-Adapter-(
 - Github desktop
 - Git account
 ## Python Setup
-1. First, download the latest installation package from the Python website. We are using Python 3.12 for this project
-2. After downloading, double-click python-3.11.5-amd64
-3. click "Customize installation" to enter "Optional Features"
-4. Keep clicking on "Next" to enter the "Advanced Options" interface
-5.  Keep clicking on "Next" to enter the "Advanced Options" interface
-6. Be sure to check "Add Python to environment variables"
-[image]
-1.  Click "Install" after setting, and then just wait for the installation.
-
-## Library Setup
-Clone
+We are using a python virtual environment for this project, vscode should allow you to configure it on the right side of the blue banner. Make sure to select requirements.txt when choosing the requirements file 
